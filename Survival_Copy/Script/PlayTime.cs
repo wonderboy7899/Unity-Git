@@ -21,37 +21,30 @@ public class PlayTime : MonoBehaviour
     void Update()
     {
         TimeCur += Time.deltaTime;
-        UIManager.Instance.PlayTime.text = ReturnTime(TimeCur);
+        UIManager.Instance.PlayTime.text = ReturnTimeToString(TimeCur);
+        EnemySpawnManager.Instance.MaxEnemy = EnemySpawnManager.Instance.SetMaxEnemySpawn(TimeCur);
 
-        // 현재 TimeCur 에 따라서 적 스폰 최대수를 설정하는 구문 작성필요. SpawnScript 에 스크립트 저장해놨음.
-        EnemySpawnSys.GetComponent<EnemySpawn>().MaxEnemy = SetMaxEnemySpawn(TimeCur);
+        if (TimeCur > 300f)
+        {
+            //EnemySpawnManager.Instance.() 보스 몬스터 스폰함수 실행.
+        }
+        else if (TimeCur > 600f)
+        {
+            //EnemySpawnManager.Instance.()
+        }
+        else if (TimeCur > 900f)
+        {
+            //EnemySpawnManager.Instance.()
+        }
+        else if (TimeCur > 1200f)
+        {
+            //EnemySpawnManager.Instance.()
+        }
     }
 
     // 시간에 따른 적 스폰 패턴 함수 생성
 
-    int SetMaxEnemySpawn(float TimeCur)
-    {
-        if (TimeCur < 10)
-        {
-            return 10;
-        }
-        else if (10 <= TimeCur && TimeCur < 60)
-        {
-            return 20;
-        }
-        else if (60 <= TimeCur && TimeCur < 180)
-        {
-            return 50;
-        }
-        else if (180 <= TimeCur && TimeCur < 300)
-        {
-            return 100;
-        }
-        else
-            return 200;
-    }
-
-    string ReturnTime(float TimeCur)
+    string ReturnTimeToString(float TimeCur)
     {
         int min = 0;
         int sec = 0;

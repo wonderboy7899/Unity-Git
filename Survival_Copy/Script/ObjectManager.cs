@@ -5,6 +5,8 @@ using UnityEngine;
 public class ObjectManager : MonoBehaviour
 {
     public GameObject Player;
+    public GameObject Enemy01;
+    public GameObject EnemyMissile;
     public GameObject Missile1;
     public GameObject Missile2;
 

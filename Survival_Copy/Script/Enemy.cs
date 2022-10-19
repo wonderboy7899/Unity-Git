@@ -38,7 +38,7 @@ public class Enemy : MonoBehaviour
         if (Status.NowHP <= 0)
         {
             int i = Random.Range(1, 10000);
-            EnemySpawn.CurEnemy -= 1;
+            EnemySpawnManager.Instance.CurEnemy -= 1;
             if (i > 0 && i <= 9900)// Gold
             {
                 Instantiate(ItemList[2], gameObject.transform.position, Quaternion.identity).transform.parent = null;       // 임시적으로 Gold 없앰
