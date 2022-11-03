@@ -29,12 +29,28 @@ public class Enemy : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         Status = new Status();
         Status = Status.SetUnitStatus(unitcode);
+        StartCoroutine(Shot());
     }
 
     // Update is called once per frame
     void Update()
     {
+        ItemDrop();
         Pos = transform.position;
+
+        if (player != null)
+        {
+            target = player.transform.position;
+        }
+        dir = target - Pos;
+        transform.position += dir * speed * Time.deltaTime;
+
+        float angle = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.back);
+    }
+
+    public void ItemDrop()
+    {
         if (Status.NowHP <= 0)
         {
             int i = Random.Range(1, 10000);
@@ -61,15 +77,21 @@ public class Enemy : MonoBehaviour
             }
             Destroy(gameObject);
         }
+    }
 
-        if (player != null)
+    IEnumerator Shot()
+    {
+        yield return new WaitForSeconds(3f);
+
+        Instantiate(ObjectManager.Instance.EnemyMissile, gameObject.transform).transform.parent = null;
+        
+        if (GameManager.Instance.PlayerDied == true)                // 플레이어 사망시
         {
-            target = player.transform.position;
+            StopCoroutine(Shot());
         }
-        dir = target - Pos;
-        transform.position += dir * speed * Time.deltaTime;
-
-        float angle = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.back);
+        else
+        {
+            StartCoroutine(Shot());
+        }
     }
 }

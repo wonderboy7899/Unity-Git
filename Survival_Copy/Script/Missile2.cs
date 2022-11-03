@@ -12,8 +12,11 @@ public class Missile2 : MonoBehaviour
     GameObject Target;
 
     int atk;
+    float speed = 10f;
 
-    Rigidbody2D RB;
+    Quaternion rotTarget;
+
+    Rigidbody2D rb;
 
     Vector2 Pos;
     Vector3 dir;
@@ -36,6 +39,7 @@ public class Missile2 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         atk = SkillManager.Instance.SkillList[1].atk;
         EnemyList = GameObject.FindGameObjectsWithTag("Enemy");
         int i = Random.Range(0, EnemyList.Length - 1);
@@ -59,8 +63,13 @@ public class Missile2 : MonoBehaviour
             target = Target.transform.position;
         }
         Pos = transform.position;
-        dir = (target - Pos);
+        dir = (target - Pos).normalized;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + 90;
+        rotTarget = Quaternion.AngleAxis(angle, Vector3.forward);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotTarget, Time.deltaTime * 20f);
+        rb.velocity = new Vector2(dir.x * speed, dir.y * speed);
+        
         //transform.position += dir * 2 * Time.deltaTime;
-        transform.Translate(dir.normalized * 10 * Time.deltaTime);
+        //transform.Translate(dir * 10 * Time.deltaTime);
     }
 }

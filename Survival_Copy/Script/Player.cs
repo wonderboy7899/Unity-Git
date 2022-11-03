@@ -7,9 +7,13 @@ public class Player : MonoBehaviour
 {
     public UnitCode unitcode;
 
+    public DynamicJoystick DynamicJoystick;
+    public GameObject Joystick;
     public GameObject Missile1;                                             // 변수 설정
     public GameObject Missile2;
     public Status Status;
+    public Rigidbody rb;
+
     float Speed = 5f;
 
     int level = 1;
@@ -56,8 +60,8 @@ public class Player : MonoBehaviour
         {
             Vector3 dirXY = (Vector3.right * dirX) + (Vector3.up * dirY);
             dirXY.Normalize();
-            var angle = Mathf.Atan2(dirXY.x, dirXY.y) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.AngleAxis(angle, Vector3.back);
+            float Keyboard_angle = Mathf.Atan2(dirXY.x, dirXY.y) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(Keyboard_angle, Vector3.back);
             transform.position += dirXY * Speed * Time.deltaTime;
         }
     }
@@ -68,7 +72,6 @@ public class Player : MonoBehaviour
         level += 1;
         MaxExp *= 1.5f;
         Exp = 0;
-        Status.MaxHP += 10;
         Status.NowHP = Status.MaxHP;
     }
 

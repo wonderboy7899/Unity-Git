@@ -16,11 +16,7 @@ public class LevelUPUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        RanNum = UIManager.Instance.GetRandomNum();
-        for (int i = 0; i < SkillManager.Instance.SkillList.Count; i++)           // 스킬 아이콘 리스트 Icons 초기화
-            Icons.Add(SkillIcons.transform.GetChild(i));
 
-        SetIcon(RanNum);
     }
 
     // Update is called once per frame
@@ -29,36 +25,23 @@ public class LevelUPUI : MonoBehaviour
 
     }
 
-    public void SetIcon(List<int> RanNum)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            // Firtst, Second, Third 의 내용 채우기
-            temp[i].GetChild(0).GetComponent<Image>().sprite = Icons[RanNum[i]].GetComponent<Image>().sprite;
-            temp[i].GetChild(1).GetComponent<Text>().text = SkillManager.Instance.SkillList[RanNum[i]].SkillName;
-            temp[i].GetChild(2).GetComponent<Text>().text = SkillManager.Instance.SkillList[RanNum[i]].level + "";
-            temp[i].GetChild(3).GetComponent<Text>().text = "스킬 설명란";
-        }
-    }
 
     // 스킬 선택시 실행할 함수 만들기. 3개 OnClick()
     public void First()
     {
-        Debug.Log(SkillManager.Instance.SkillList[RanNum[0]].level);
-        SkillManager.Instance.SkillList[RanNum[0]].level += 1;
-        Debug.Log(SkillManager.Instance.SkillList[RanNum[0]].level);
+        SkillManager.Instance.SkillList[UIManager.Instance.RanNum[0]].level += 1;
         UIManager.Instance.DesLevelUI();
     }
 
     public void Second()
     {
-        SkillManager.Instance.SkillList[RanNum[1]].level += 1;  
+        SkillManager.Instance.SkillList[UIManager.Instance.RanNum[1]].level += 1;  
         UIManager.Instance.DesLevelUI();
     }
 
     public void Third()
     {
-        SkillManager.Instance.SkillList[RanNum[2]].level += 1;
+        SkillManager.Instance.SkillList[UIManager.Instance.RanNum[2]].level += 1;
         UIManager.Instance.DesLevelUI();
     }
 

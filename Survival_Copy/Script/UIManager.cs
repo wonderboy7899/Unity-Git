@@ -15,12 +15,17 @@ public class UIManager : MonoBehaviour
     public Slider ExpBar;
     public Text PlayTime;
 
+    public List<Transform> Icons;
+    public List<int> RanNum;
+    public Transform[] temp;                                                // 스킬아이콘, 이름, 레벨, 정보
+
     void Awake()
     {
         if (null == instance)
             instance = this;
         else
             Destroy(this.gameObject);
+
     }
 
     //게임 매니저 인스턴스에 접근할 수 있는 프로퍼티. static이므로 다른 클래스에서 맘껏 호출할 수 있다.
@@ -36,10 +41,24 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void SetIcon()
+    {   
+        RanNum = UIManager.Instance.GetRandomNum();
+        for (int i = 0; i < 3; i++)
+        {
+            // Firtst, Second, Third 의 내용 채우기
+            temp[i].GetChild(0).GetComponent<Image>().sprite = LevelUPUI.GetComponent<LevelUPUI>().Icons[RanNum[i]].GetComponent<Image>().sprite;       // 초기화 하기전에 실행되어서 OutOfRange 오류 발생,
+            temp[i].GetChild(1).GetComponent<Text>().text = SkillManager.Instance.SkillList[RanNum[i]].SkillName;
+            temp[i].GetChild(2).GetComponent<Text>().text = SkillManager.Instance.SkillList[RanNum[i]].level.ToString();
+            temp[i].GetChild(3).GetComponent<Text>().text = "스킬 설명란";
+        }
+    }
+
     public void DisLevelUI()
     {
         LevelUPUI.SetActive(true);
         GameManager.Instance.GamePause();
+        SetIcon();
     }
 
     public void DesLevelUI()

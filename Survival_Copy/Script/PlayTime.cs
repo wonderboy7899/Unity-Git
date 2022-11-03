@@ -24,7 +24,7 @@ public class PlayTime : MonoBehaviour
         UIManager.Instance.PlayTime.text = ReturnTimeToString(TimeCur);
         EnemySpawnManager.Instance.MaxEnemy = EnemySpawnManager.Instance.SetMaxEnemySpawn(TimeCur);
 
-        if (TimeCur > 300f)
+        if (TimeCur == 10f)
         {
             //EnemySpawnManager.Instance.() 보스 몬스터 스폰함수 실행.
         }

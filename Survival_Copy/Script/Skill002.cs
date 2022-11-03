@@ -9,7 +9,7 @@ public class Skill002 : Skill
         SkillName = "Skill002";
         Active = false;
         atk = 10;
-        level = 0;
+        level = 1;
         coolTime = 1.5f;
     }
 

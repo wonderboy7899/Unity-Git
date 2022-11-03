@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Missile1 : MonoBehaviour
 {
+    int level;
     int atk;
     GameObject ColObj;
     Vector2 dir;
@@ -24,6 +25,7 @@ public class Missile1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        level = SkillManager.Instance.SkillList[0].atk; 
         atk = SkillManager.Instance.SkillList[0].atk;
 
         Destroy(gameObject, 5);
@@ -39,5 +41,11 @@ public class Missile1 : MonoBehaviour
         }
 
         transform.Translate(dir.normalized * 7 * Time.deltaTime);
+    }
+
+    IEnumerator Explosive()
+    {
+        yield return new WaitForSeconds(2f);
+
     }
 }
