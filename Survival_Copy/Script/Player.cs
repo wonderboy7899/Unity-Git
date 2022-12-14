@@ -7,10 +7,6 @@ public class Player : MonoBehaviour
 {
     public UnitCode unitcode;
 
-    public DynamicJoystick DynamicJoystick;
-    public GameObject Joystick;
-    public GameObject Missile1;                                             // 변수 설정
-    public GameObject Missile2;
     public Status Status;
     public Rigidbody rb;
 
@@ -26,6 +22,8 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameManager.Instance.GameResume();
+
         Status = new Status();                                              // 스테이터스 설정 및 스킬 리스트 추가
         Status = Status.SetUnitStatus(unitcode);
         SkillManager.Instance.InitSkill();
@@ -41,9 +39,13 @@ public class Player : MonoBehaviour
 
         if (Status.NowHP <= 0)                                              // 플레이어 사망시
         {
+            ObjectManager.Instance.Drone.SetActive(false);
             gameObject.SetActive(false);
             GameManager.Instance.PlayerDied = true;
             UIManager.Instance.HealthSystem.SetActive(false);
+            UIManager.Instance.GameEnd();
+            Managers.Sound.Clear();
+            Managers.Sound.Play("Audio/Tine Schenck - Game Over Jingles Pack - 51 Jingle 3", Sound.Effect);
         }
 
         if (Exp >= MaxExp)                                                  // 플레이어 레벨업 시
@@ -53,24 +55,34 @@ public class Player : MonoBehaviour
             PlayerLevelUP();
         }
 
-        Player_Pos = transform.position;                                    // 플레이어 이동
+        if (ObjectManager.Instance.Boss1 == null)
+        {
+            UIManager.Instance.GameEnd();
+        }
+
+        Player_Pos = transform.position;
         float dirX = Input.GetAxis("Horizontal");
         float dirY = Input.GetAxis("Vertical");
         if (dirX != 0 || dirY != 0)
         {
-            Vector3 dirXY = (Vector3.right * dirX) + (Vector3.up * dirY);
-            dirXY.Normalize();
-            float Keyboard_angle = Mathf.Atan2(dirXY.x, dirXY.y) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.AngleAxis(Keyboard_angle, Vector3.back);
-            transform.position += dirXY * Speed * Time.deltaTime;
+            Move((Vector3.right * dirX) + (Vector3.up * dirY));
         }
+    }
+
+    public void Move(Vector3 inputDirection)
+    {
+        Vector3 dirXY = inputDirection;//(Vector3.right * dirX) + (Vector3.up * dirY);
+        dirXY.Normalize();
+        float Keyboard_angle = Mathf.Atan2(dirXY.x, dirXY.y) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(Keyboard_angle, Vector3.back);
+        transform.position += dirXY * Speed * Time.deltaTime;
     }
 
     void PlayerLevelUP()
     {
         Vector2 Pos = new Vector2(0, 0);
         level += 1;
-        MaxExp *= 1.5f;
+        MaxExp *= 2f;
         Exp = 0;
         Status.NowHP = Status.MaxHP;
     }
@@ -117,6 +129,7 @@ public class Player : MonoBehaviour
             }
             else if (Item.name == "Chest(Clone)")
             {
+                // 랜덤 능력치 레벨업 / 추가
                 Destroy(Item);
             }
         }

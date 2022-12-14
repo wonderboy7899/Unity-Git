@@ -7,9 +7,9 @@ public class PlayTime : MonoBehaviour
 {
     public GameObject EnemySpawnSys;
 
-    private float TimeStart = 0f;
-    private float TimeCur;
-    private float TimeMax;
+    public float TimeStart = 0f;
+    public float TimeCur;
+    public float TimeMax;
 
     // Start is called before the first frame update
     void Start()
@@ -21,12 +21,17 @@ public class PlayTime : MonoBehaviour
     void Update()
     {
         TimeCur += Time.deltaTime;
+        GameManager.Instance.TimeCur = TimeCur;
         UIManager.Instance.PlayTime.text = ReturnTimeToString(TimeCur);
         EnemySpawnManager.Instance.MaxEnemy = EnemySpawnManager.Instance.SetMaxEnemySpawn(TimeCur);
 
-        if (TimeCur == 10f)
+        if (TimeCur > 10f && TimeCur < 10.1f)//TimeCur > 300f && TimeCur < 300.1f)
         {
-            //EnemySpawnManager.Instance.() 보스 몬스터 스폰함수 실행.
+            EnemySpawnManager.Instance.SpawnBoss(ObjectManager.Instance.Boss1);
+            ObjectManager.Instance.RedField.transform.position = ObjectManager.Instance.Player.transform.position;
+            ObjectManager.Instance.RedField.SetActive(true);
+            UIManager.Instance.BossHealth.SetActive(true);
+            UIManager.Instance.BossName.text = "Boss1";
         }
         else if (TimeCur > 600f)
         {
