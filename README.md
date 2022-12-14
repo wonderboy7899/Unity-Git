@@ -59,11 +59,10 @@ Input.GetAxis() 를 이용해 가로 및 세로값을 float 형태로 받아 이
 ### UIManager
 여러 UI 패널 및 이미지를 GameObject 로 접근할 수 있게 해주며 UI 팝업과 세팅에 필요한 함수를 포함하고 있습니다.<br/>
 
-#### UI 에 지정된 스킬의 정보를 채워넣는 함수
+#### UI 에 지정된 스킬의 정보를 채워넣는 SetIcon 함수
 레벨업하면서 팝업되는 스킬선택 UI 에 스킬 3개가 랜덤으로 들어오기 때문에<br/>
 랜덤으로 숫자를 뽑아주는 GetRandomNum 함수를 따로 만들어 사용했습니다.<br/>
 
-UI 에 표시되는 정보를 채워주는 SetIcon() 함수입니다.<br/>
 #### SetIcon()
 ```C#
     public void SetIcon()
