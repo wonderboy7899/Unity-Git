@@ -4,7 +4,7 @@
 유니티 외에는 Xampp 를 이용한 phpMyAdmin 을 사용해 간단한 로그인을 구현하고
 플레이어의 스탯을 JSON 형태로 SQL 서버에 저장하고 불러오는데 사용했습니다.
 
-## 구조
+## 싱글톤 구조
 다른 클래스나 오브젝트 스크립트에 있는 변수와 함수를 사용하기 위해서 싱글톤 방식의 Manager 를 많이 사용했습니다.
 
 ### GameManager
@@ -15,10 +15,16 @@
 여러 UI 패널 및 이미지를 GameObject 로 접근할 수 있게 해주며 UI 팝업과 세팅에 필요한 함수를 포함하고 있습니다.
 
 #### UI 에 지정된 스킬의 정보를 채워넣는 함수
+
+레벨업하면서 팝업되는 스킬선택 UI 에 스킬 3개가 랜덤으로 들어오기 때문에
+랜덤으로 숫자를 뽑아주는 GetRandomNum 함수를 따로 만들어 사용했습니다.
+
+UI 에 표시되는 정보를 채워주는 SetIcon() 함수입니다.
+#### SetIcon()
 ```C#
     public void SetIcon()
     {   
-        RanNum = UIManager.Instance.GetRandomNum();
+        RanNum = GetRandomNum();
         for (int i = 0; i < 3; i++)
         {
             // Firtst, Second, Third 의 내용 채우기
@@ -29,6 +35,31 @@
         }
     }
 ```
+
+#### GetRandomNum()
+```C#
+    public List<int> GetRandomNum()
+    {
+        int Length = SkillManager.Instance.SkillList.Count;
+
+        List<int> numArray = new List<int>();
+        List<int> result = new List<int>();
+
+        for (int i = 0; i < Length; i++)
+        {
+            numArray.Add(i);                            // 0, 1, 2 ...
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            int RanNum = Random.RandomRange(0, numArray.Count);
+            result.Add(numArray[RanNum]);
+            numArray.RemoveAt(RanNum);
+        }
+        return result;
+    }
+```
+
 #### 각종 UI 팝업과 관련된 함수
 ```C#
     public void DisLevelUI()
@@ -58,7 +89,7 @@
 스킬 클래스로 추가한 스킬들을 리스트로 관리하고 스킬의 보유여부, 스킬 아이콘 배치, 쿨타임, 스킬 사용에 필요한 각종 함수를 포함하고 있습니다.
 
 #### skill 클래스를 상속받은 스킬들을 생성해줍니다.
-```c#
+```C#
     public List<Skill> SkillList = new List<Skill>();                              // 스킬 관리 (UIManager.cs, LevelUPUI.cs, SkillManager.cs, Skill000.cs 등의 스크립트와 연관)
     Skill001 S1 = new Skill001();
     Skill002 S2 = new Skill002();
@@ -67,7 +98,7 @@
 ```
 
 #### skill 클래스 리스트에 스킬을 추가하며 스킬 정보를 초기화 시켜주는 함수입니다.
-```c#
+```C#
     public void InitSkill()
     {
         SkillList.Add(S1);
@@ -81,7 +112,7 @@
     }
 ```
 #### 현재 보유하고 있는 스킬의 아이콘을 유니티 Canvas 에 좌표지정으로 배치해주는 함수입니다.
-```c#
+```C#
 public void SkillSet()                                                          // InitSkill 과 함께 Player 의 Start 문에서 초기화, UIManager DisLevelUI 에서 레벨업 할때마다 실행됨
     {
         for (int i = 0; i < SkillList.Count; i++)
@@ -115,7 +146,7 @@ public void SkillSet()                                                          
 #### 스킬 쿨타임과 관련된 함수들입니다. 
 
 쿨타임은 코루틴과 Time.deltaTime 을 이용한 방식으로 작성했습니다.
-```c#
+```C#
 public void DisSkillCool(Skill skill)                           // 쿨타임
     {
         foreach (GameObject Obj in SkillIcons)
@@ -146,49 +177,11 @@ public void DisSkillCool(Skill skill)                           // 쿨타임
 ### ObjectManager
 각종 프리팹에 쉽게 접근하기 위한 오브젝트 매니저입니다.
 
-#### 인스턴스화된 Manager 를 통해 오브젝트 변수에 쉽게 접근하기 위한 방안으로 사용했습니다.
-```c#
-    public GameObject Player;
-    public GameObject Drone;
-    public GameObject RedField;
-    public GameObject PBarrier;
-    public GameObject Boss1;
-    public GameObject Enemy01;
-    public GameObject EnemyMissile;
-    public GameObject Missile1;
-    public GameObject Missile2;
-    public GameObject Clone;
-```
 ### EnemySpawnManager
 적의 최대수와 현재 수, 생성 위치지정 등 적 생성에 필요한 기능을 모아둔 매니저 입니다.
 
-#### 시간에 따라 적의 최대수가 달라집니다.
-```c#
-    public int SetMaxEnemySpawn(float TimeCur)
-    {
-        if (TimeCur < 10)
-        {
-            return 10;
-        }
-        else if (10 <= TimeCur && TimeCur < 60)
-        {
-            return 20;
-        }
-        else if (60 <= TimeCur && TimeCur < 180)
-        {
-            return 50;
-        }
-        else if (180 <= TimeCur && TimeCur < 300)
-        {
-            return 100;
-        }
-        else
-            return 200;
-    }
-```
-
 #### 보스는 SetActive 를 일반적은 Instantiate 를 사용해 게임에 등장합니다.
-```c#
+```C#
     public void SpawnBoss(GameObject Boss)
     {
         Transform Player = ObjectManager.Instance.Player.transform;
@@ -208,7 +201,7 @@ public void DisSkillCool(Skill skill)                           // 쿨타임
 ```
 
 #### 원의 방정식을 이용해 적의 생성위치를 정하는 함수입니다.
-```c#
+```C#
     public Vector3 GetRandomPosition(float radius)
     {
         float a = ObjectManager.Instance.Player.transform.position.x;
