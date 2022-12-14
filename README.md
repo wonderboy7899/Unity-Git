@@ -4,6 +4,51 @@
 유니티 외에는 Xampp 를 이용한 phpMyAdmin 을 사용해 간단한 로그인을 구현하고
 플레이어의 스탯을 JSON 형태로 SQL 서버에 저장하고 불러오는데 사용했습니다.
 
+## Login
+WWW Form 과 WWW webRequest 를 이용한 유니티 스크립트와 php 를 이용해서 간단하게 만들었습니다.
+회원가입을 통해 데이터베이스에 아이디를 추가하고 로그인하는 정도의 기능을 만들었습니다.
+
+## Player
+### Status 클래스
+Status 클래스를 만들어 부여받은 UnitCode 에 따라 각기 다른 스테이터스 값을 설정해줍니다.
+UnitCode 는 따로 Enum 스크립트를 작성해 부여했습니다.
+
+```C#
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Player : MonoBehaviour
+{
+    public UnitCode unitcode;
+    
+    void Start()
+    {
+        GameManager.Instance.GameResume();
+
+        Status = new Status();
+        Status = Status.SetUnitStatus(unitcode);
+        SkillManager.Instance.InitSkill();
+        SkillManager.Instance.SkillSet();
+    }
+}
+```
+### 이동
+Input.GetAxis() 를 이용해 가로 및 세로값을 float 형태로 받아 이를 벡터화 시켜 이동할 방향을 지정하고
+이를 각도로 변환해 플레이어 오브젝트를 회전시킨뒤 움직이도록 만들었습니다.
+```C#
+    public void Move(Vector3 inputDirection)
+    {
+        Vector3 dirXY = inputDirection;//(Vector3.right * dirX) + (Vector3.up * dirY);
+        dirXY.Normalize();
+        float Keyboard_angle = Mathf.Atan2(dirXY.x, dirXY.y) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(Keyboard_angle, Vector3.back);
+        transform.position += dirXY * Speed * Time.deltaTime;
+    }
+```
+
+
 ## 싱글톤 구조
 다른 클래스나 오브젝트 스크립트에 있는 변수와 함수를 사용하기 위해서 싱글톤 방식의 Manager 를 많이 사용했습니다.
 
@@ -61,6 +106,9 @@ UI 에 표시되는 정보를 채워주는 SetIcon() 함수입니다.
 ```
 
 #### 각종 UI 팝업과 관련된 함수
+
+플레이어가 레벨업할때 사용하는 UI 및 게임 클리어 UI 를 띄워주는 함수입니다.
+
 ```C#
     public void DisLevelUI()
     {
