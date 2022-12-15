@@ -14,6 +14,7 @@
 - 사용 프로그램 : 유니티, Xampp(phpMyAdmin)<br/>
 - 제작기간 : 3개월<br/>
 - 모티브 : 갤러그 + 뱀파이어 서바이벌<br/>
+- 동영상 링크 : [https://playground942.tistory.com/2]
 
 ## 조작법
 -W, A, S, D 를 이용해 상하좌우로 이동할 수 있고<br/>
@@ -49,17 +50,57 @@
 스킬의 이름, 레벨, 효과, 쿨타임 등의 정보를 이 리스트에서 받아와 사용합니다.<br/>
 <br/>
 ***
-``` C#
-스킬 리스트 사용 로직
-```
-***
 
-플레이어가 스킬을 배우면 스킬아이콘을 화면에 배치하게 되는데 보유스킬의 갯수에 따라 좌표를 지정해주는 방식을 사용했습니다.<br/>
-<br/>
-***
+## Skill.cs
 ``` C#
-스킬 아이콘 UI 배치 로직
+public class Skill : MonoBehaviour
+{
+    public string           SkillName;
+    public string           SkillInfo;
+    public bool             Active;
+    public int              atk;
+    public int              level;
+    public float            coolTime;
+
+    public virtual void SetStatus()
+    {
+
+    }
+
+    public virtual void ActiveSkill()
+    {
+
+    }
+}
 ```
+*** 
+
+## SkillManager.cs
+``` C#
+public class SkillManager : MonoBehaviour
+{
+    private static SkillManager instance = null;
+
+    public List<Skill> SkillList = new List<Skill>();
+    Skill001 S1 = new Skill001();
+    Skill002 S2 = new Skill002();
+    Skill003 S3 = new Skill003();
+    Skill004 S4 = new Skill004();
+
+    public void InitSkill()
+    {
+        SkillList.Add(S1);
+        S1.SetStatus();
+        SkillList.Add(S2);
+        S2.SetStatus();
+        SkillList.Add(S3);
+        S3.SetStatus();
+        SkillList.Add(S4);
+        S4.SetStatus();
+    }
+}
+```
+
 ***
 ## 느낀점
 스킬의 각종 정보(쿨타임, 아이콘, 보유여부) 등의 정보를 플레이어에게 전달하는 기능을 구현하는 부분이 깔끔하지 못해 아쉽습니다.<br/>
