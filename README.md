@@ -1,7 +1,13 @@
 # SPACE SURVIVAL
 ## 유니티 게임 프로젝트
 ***
-GIF 들어올 자리
+<P>
+<img src = "https://user-images.githubusercontent.com/67588694/207830424-1b12ae52-c116-4ed3-8f08-e1c6768fc226.gif">
+</P>
+
+<P>
+<img src = "https://user-images.githubusercontent.com/67588694/207830503-711c2d3d-e889-4c6c-bbad-1b9ee4a85c1a.gif">
+</P>
 ***
 - 사용 프로그램 : 유니티, Xampp(phpMyAdmin)
 - 제작기간 : 3개월
