@@ -1,5 +1,6 @@
 # SPACE SURVIVAL
 ## 유니티 게임 프로젝트
+***
 GIF 들어올 자리
 ***
 - 사용 프로그램 : 유니티, Xampp(phpMyAdmin)
