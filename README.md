@@ -9,9 +9,10 @@
 <img src = "https://user-images.githubusercontent.com/67588694/207830503-711c2d3d-e889-4c6c-bbad-1b9ee4a85c1a.gif">
 </P>
 ***
-- 사용 프로그램 : 유니티, Xampp(phpMyAdmin)
-- 제작기간 : 3개월
-- 모티브 : 갤러그 + 뱀파이어 서바이벌
+
+- 사용 프로그램 : 유니티, Xampp(phpMyAdmin)<br/>
+- 제작기간 : 3개월<br/>
+- 모티브 : 갤러그 + 뱀파이어 서바이벌<br/>
 
 ## 조작법
 -W, A, S, D 를 이용해 상하좌우로 이동할 수 있고<br/>
