@@ -1,265 +1,29 @@
 # SPACE SURVIVAL
 ## 유니티 프로젝트
-갤러그와 뱀파이어 서바이벌을 합쳐서 만든 유니티 게임 프로젝트 입니다.<br/>
+유니티를 배우면서 만든 게임 프로젝트 입니다.<br/>
 유니티 외에는 Xampp 를 이용한 phpMyAdmin 을 사용해 간단한 로그인을 구현하고<br/>
 플레이어의 스탯을 JSON 형태로 SQL 서버에 저장하고 불러오는데 사용했습니다.<br/>
 
-## Login
-WWW Form 과 WWW webRequest 를 이용한 유니티 스크립트와 php 를 이용해서 간단하게 만들었습니다.<br/>
-회원가입을 통해 데이터베이스에 아이디를 추가하고 로그인하는 정도의 기능을 만들었습니다.<br/>
+***
 
-## Player
-### Status 클래스
-Status 클래스를 만들어 부여받은 UnitCode 에 따라 각기 다른 스테이터스 값을 설정해줍니다.<br/>
-UnitCode 는 따로 Enum 스크립트를 작성해 부여했습니다.<br/>
+- 제작기간 : 3개월
+- 모티브 : 갤러그 + 뱀파이어 서바이벌
 
-```C#
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+## 느낀점
+스킬 클래스를 상속받는 여러 스킬들을 스킬 클래스 리스트에 담아 사용하는 방식으로 플레이어의 스킬을 관리했는데<br/>
+스킬의 각종 정보(쿨타임, 아이콘, 보유여부) 등의 정보를 플레이어에게 전달하는 기능을 구현하는 부분을 깔끔하게 정리하지 못해 아쉽습니다.<br/>
+<br/>
+유니티 스크립트와 php 를 이용해 SQL 서버 데이터베이스를 수정해보며 로그인 기능을 만들어본 경험이 제일 새롭고 신기했습니다.<br/>
+Json 형태의 파일을 사용하는것을 좀 더 연습할 계획입니다.<br/>
+<br/>
 
-public class Player : MonoBehaviour
-{
-    public UnitCode unitcode;
-    
-    void Start()
-    {
-        GameManager.Instance.GameResume();
+## 조작법
+W, A, S, D 를 이용해 상하좌우로 이동할 수 있고<br/>
+플레이어가 레벨업했을 때 표시되는 스킬선택 UI 에서 스킬을 고르면 됩니다.<br/>
+<br/>
+기본적인 공격은 자동조준으로 이루어집니다.
 
-        Status = new Status();
-        Status = Status.SetUnitStatus(unitcode);
-        SkillManager.Instance.InitSkill();
-        SkillManager.Instance.SkillSet();
-    }
-}
-```
-### 이동
-Input.GetAxis() 를 이용해 가로 및 세로값을 float 형태로 받아 이를 벡터화 시켜 이동할 방향을 지정하고<br/>
-이를 각도로 변환해 플레이어 오브젝트를 회전시킨뒤 움직이도록 만들었습니다.<br/>
-```C#
-    public void Move(Vector3 inputDirection)
-    {
-        Vector3 dirXY = inputDirection;//(Vector3.right * dirX) + (Vector3.up * dirY);
-        dirXY.Normalize();
-        float Keyboard_angle = Mathf.Atan2(dirXY.x, dirXY.y) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(Keyboard_angle, Vector3.back);
-        transform.position += dirXY * Speed * Time.deltaTime;
-    }
-```
-
-
-## 싱글톤 구조
-다른 클래스나 오브젝트 스크립트에 있는 변수와 함수를 사용하기 위해서 싱글톤 방식의 Manager 를 많이 사용했습니다.<br/>
-
-### GameManager
-게임의 시간을 조정하는 역할과 게임 진행과 관련된 변수를 저장하는 용도로 사용했습니다. <br/>
-(플레이어의 죽음 여부, 적 격파 횟수, 소지 게임재화 등)<br/>
-
-### UIManager
-여러 UI 패널 및 이미지를 GameObject 로 접근할 수 있게 해주며 UI 팝업과 세팅에 필요한 함수를 포함하고 있습니다.<br/>
-
-#### UI 에 지정된 스킬의 정보를 채워넣는 SetIcon 함수
-레벨업하면서 팝업되는 스킬선택 UI 에 스킬 3개가 랜덤으로 들어오기 때문에<br/>
-랜덤으로 숫자를 뽑아주는 GetRandomNum 함수를 따로 만들어 사용했습니다.<br/>
-
-#### SetIcon()
-```C#
-    public void SetIcon()
-    {   
-        RanNum = GetRandomNum();
-        for (int i = 0; i < 3; i++)
-        {
-            // Firtst, Second, Third 의 내용 채우기
-            temp[i].GetChild(0).GetComponent<Image>().sprite = LevelUPUI.GetComponent<LevelUPUI>().Icons[RanNum[i]].GetComponent<Image>().sprite;
-            temp[i].GetChild(1).GetComponent<Text>().text = SkillManager.Instance.SkillList[RanNum[i]].SkillName;
-            temp[i].GetChild(2).GetComponent<Text>().text = SkillManager.Instance.SkillList[RanNum[i]].level.ToString();
-            temp[i].GetChild(3).GetComponent<Text>().text = SkillManager.Instance.SkillList[RanNum[i]].SkillInfo;
-        }
-    }
-```
-
-#### GetRandomNum()
-```C#
-    public List<int> GetRandomNum()
-    {
-        int Length = SkillManager.Instance.SkillList.Count;
-
-        List<int> numArray = new List<int>();
-        List<int> result = new List<int>();
-
-        for (int i = 0; i < Length; i++)
-        {
-            numArray.Add(i);                            // 0, 1, 2 ...
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            int RanNum = Random.RandomRange(0, numArray.Count);
-            result.Add(numArray[RanNum]);
-            numArray.RemoveAt(RanNum);
-        }
-        return result;
-    }
-```
-
-#### 각종 UI 팝업과 관련된 함수
-
-플레이어가 레벨업할때 사용하는 UI 및 게임 클리어 UI 를 띄워주는 함수입니다.<br/>
-
-```C#
-    public void DisLevelUI()
-    {
-        LevelUPUI.SetActive(true);
-        GameManager.Instance.GamePause();
-        SetIcon();
-    }
-
-    public void DesLevelUI()
-    {
-        LevelUPUI.SetActive(false);
-        GameManager.Instance.GameResume();
-        SkillManager.Instance.SkillSet();
-    }
-
-    public void GameEnd()
-    {
-        ObjectManager.Instance.RedField.SetActive(false);
-        BossHealth.SetActive(false);
-        Clear_Panel.SetActive(true);
-        GameManager.Instance.GamePause();
-    }
-```
-
-### SkillManager
-스킬 클래스로 추가한 스킬들을 리스트로 관리하고<br/>
-스킬의 보유여부, 스킬 아이콘 배치, 쿨타임, 스킬 사용에 필요한 각종 함수를 포함하고 있습니다.<br/>
-
-#### skill 클래스를 상속받은 스킬들을 생성해줍니다.
-```C#
-    public List<Skill> SkillList = new List<Skill>();                              // 스킬 관리 (UIManager.cs, LevelUPUI.cs, SkillManager.cs, Skill000.cs 등의 스크립트와 연관)
-    Skill001 S1 = new Skill001();
-    Skill002 S2 = new Skill002();
-    Skill003 S3 = new Skill003();
-    Skill004 S4 = new Skill004();
-```
-
-#### skill 클래스 리스트에 스킬을 추가하며 스킬 정보를 초기화 시켜주는 함수입니다.
-```C#
-    public void InitSkill()
-    {
-        SkillList.Add(S1);
-        S1.SetStatus();
-        SkillList.Add(S2);
-        S2.SetStatus();
-        SkillList.Add(S3);
-        S3.SetStatus();
-        SkillList.Add(S4);
-        S4.SetStatus();
-    }
-```
-#### 현재 보유하고 있는 스킬의 아이콘을 유니티 Canvas 에 좌표지정으로 배치해주는 함수입니다.
-```C#
-public void SkillSet()                                                          // InitSkill 과 함께 Player 의 Start 문에서 초기화, UIManager DisLevelUI 에서 레벨업 할때마다 실행됨
-    {
-        for (int i = 0; i < SkillList.Count; i++)
-        {
-            if (SkillList[i].level > 0)
-            {
-                if (SkillList[i].Active == false)
-                {
-                    StartCoroutine(Fire(SkillList[i]));
-                    SkillList[i].Active = true;
-                }
-
-                if (Pos_X == 200f)
-                {
-                    Pos_X = 0f;
-                    Pos_Y -= 100f;
-                }
-
-                Vector2 temp = new Vector2(Pos_X, Pos_Y);
-                if (SkillIcons[i].activeSelf == false)
-                {
-                    SkillIcons[i].GetComponent<RectTransform>().anchoredPosition = temp;
-                    SkillIcons[i].SetActive(true);
-                    Pos_X += 100f;
-                }
-            }
-        }
-    }
-```
-
-#### 스킬 쿨타임과 관련된 함수들입니다. 
-
-쿨타임은 코루틴과 Time.deltaTime 을 이용한 방식으로 작성했습니다.<br/>
-```C#
-public void DisSkillCool(Skill skill)                           // 쿨타임
-    {
-        foreach (GameObject Obj in SkillIcons)
-        {
-            if (Obj.name == skill.SkillName)
-            {
-                StartCoroutine(coolTime(Obj.transform.GetChild(0).gameObject, Obj.transform.GetChild(1).gameObject, skill.coolTime, skill.coolTime));
-            }
-        }
-    }
-
-    IEnumerator coolTime(GameObject filter, GameObject Text, float cool, float maxcool)
-    {
-        if (cool == 0f)
-        {
-            Text.GetComponent<TextMeshProUGUI>().text = "";
-            filter.GetComponent<Image>().fillAmount = 0;
-        }
-        while (cool > 0)
-        {
-            cool -= Time.deltaTime;
-            Text.GetComponent<TextMeshProUGUI>().text = cool.ToString("F1") + "s";
-            filter.GetComponent<Image>().fillAmount = (cool / maxcool);
-            yield return new WaitForFixedUpdate();
-        }
-    }
-```
-### ObjectManager
-각종 프리팹에 쉽게 접근하기 위한 오브젝트 매니저입니다.<br/>
-
-### EnemySpawnManager
-적의 최대수와 현재 수, 생성 위치지정 등 적 생성에 필요한 기능을 모아둔 매니저 입니다.<br/>
-
-#### 보스는 SetActive 를 일반적은 Instantiate 를 사용해 게임에 등장합니다.
-```C#
-    public void SpawnBoss(GameObject Boss)
-    {
-        Transform Player = ObjectManager.Instance.Player.transform;
-        Boss.SetActive(true);
-        //Boss.transform.Translate(new Vector3(0, 0, 0));
-        Boss.transform.position = (GetRandomPosition(radius + 10f));
-    }
-
-    public void EnemySpawn(GameObject Enemy)
-    {
-        if (EnemySpawnManager.Instance.CurEnemy < EnemySpawnManager.Instance.MaxEnemy)
-        {
-            Instantiate(Enemy, GetRandomPosition(radius), Quaternion.identity).transform.SetParent(ObjectManager.Instance.Clone.transform);
-            EnemySpawnManager.Instance.CurEnemy += 1;
-        }
-    }
-```
-
-#### 원의 방정식을 이용해 적의 생성위치를 정하는 함수입니다.
-```C#
-    public Vector3 GetRandomPosition(float radius)
-    {
-        float a = ObjectManager.Instance.Player.transform.position.x;
-        float b = ObjectManager.Instance.Player.transform.position.y;
-
-        float x = Random.Range(-radius + a, radius + a);
-        float y_b = Mathf.Sqrt(Mathf.Pow(radius, 2) - Mathf.Pow(x - a, 2));
-        y_b *= Random.Range(0, 2) == 0 ? -1 : 1;
-        float y = y_b + b;
-        Vector3 randomPosition = new Vector3(x, y, 0);
-
-        return randomPosition;
-    }
-```
+## 진행방식
+화면 가운데에 위치한 플레이어 우주선을 움직이며 적의 공격을 피해 최대한 많은 적을 격파하고<br/>
+얻은 스킬을 조합해 보스를 격파하며 스테이지를 클리어하는 방식입니다.<br/>
+<br/>
